@@ -14,8 +14,6 @@ import numpy as np
 
 BOARD_SIZE = 10
 
-board = np.zeros([BOARD_SIZE,BOARD_SIZE])
-
 
 # Each epoch has X turns. If the predator catches the prey the epoch end
 num_turns = 100
@@ -28,7 +26,7 @@ num_epoch = 200
 # Lists of bidimensional array from np.array
 
 # The boards have a list of at least num_turns BOARD x BOARD size.  All elements are 0 except the prey and the predator which takes -1 and +1 values
-ALL_BOARDS = list()
+
 ALL_PREY_ACTIONS = list()
 ALL_PREDATOR_ACTIONS = list()
 
