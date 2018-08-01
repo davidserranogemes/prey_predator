@@ -11,8 +11,17 @@ Initialize the board, the scores and prepare the execution
 """
 
 import numpy as np
+import board
+import prey
+import predator
 
+
+#CONSTANT
 BOARD_SIZE = 10
+NUM_PREYS = 1
+NUM_PREDATORS = 1
+BOARD_SIZE_X = 10
+BOARD_SIZE_Y = 10
 
 
 # Each epoch has X turns. If the predator catches the prey the epoch end
@@ -26,6 +35,9 @@ num_epoch = 200
 # Lists of bidimensional array from np.array
 
 # The boards have a list of at least num_turns BOARD x BOARD size.  All elements are 0 except the prey and the predator which takes -1 and +1 values
+BOARD = board.Board(num_preys = NUM_PREYS,num_predators = NUM_PREDATORS,board_size_x = BOARD_SIZE_X,board_size_y = BOARD_SIZE_Y)
+
+
 
 ALL_PREY_ACTIONS = list()
 ALL_PREDATOR_ACTIONS = list()
