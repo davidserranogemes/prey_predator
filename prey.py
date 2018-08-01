@@ -20,15 +20,19 @@ class Prey(object):
     _x_pos = 0
     _y_pos = 0
     
+    def __init__(self,num_epochs,num_turns):
+        self._x_pos = np.ones((num_epochs,num_turns))
+        self._y_pos = np.ones((num_epochs,num_turns))
     
-    def get_X(self):
-        return self._x_pos
     
-    def get_Y(self):
-        return self._y_pos
+    def get_X(self,epoch=0,turn=0):
+        return int(self._x_pos[epoch,turn])
     
-    def set_X(self,x):
-        self._x_pos = x 
+    def get_Y(self,epoch=0,turn=0):
+        return int(self._y_pos[epoch,turn])
     
-    def set_Y(self,Y):
-        self._y_pos = Y
+    def set_X(self,x,epoch=0,turn=0):
+        self._x_pos[epoch,turn] = x 
+    
+    def set_Y(self,Y,epoch=0,turn=0):
+        self._y_pos[epoch,turn] = Y
