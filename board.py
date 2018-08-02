@@ -142,7 +142,23 @@ class Board(object):
     def plusEpoch(self):
         self.epoch = self.epoch +1
     
+    ## MLP entry data generator for preys
+    def preyDetectsPredator(self, id, epoch = epoch, turn=turn):
+        
+    def preyIsAtLimits(self,id,epoch = epoch, turn = turn):
+            
+        
     
+    ## MLP entry data generator for predators
+    
+    def predatorHowMuchFromLimits(self,id, turn = turn, epoch = epoch):
+        
+    def predatorWhatWasLastMove(self,id,turn = turn,epoch = epoch):
+        
+    def predatorWherePreyMoved(self,id,turn = turn, epoch = epoch):
+        
+    
+        
     def predatorSeePrey(self, id,turn = turn,epoch = epoch):
         UP = False
         DOWN = False
