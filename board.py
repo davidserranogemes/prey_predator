@@ -108,7 +108,7 @@ class Board(object):
     
     def getBoardMatrix(self):
         
-        matrix = np.zeros((self.sizeY,self.sizeX))
+        matrix = np.zeros((self.sizeY+1,self.sizeX+1))
         
         
         
@@ -143,66 +143,99 @@ class Board(object):
         self.epoch = self.epoch +1
     
     ## MLP entry data generator for preys
-    def preyDetectsPredator(self, id, epoch = epoch, turn=turn):
+    #def preyDetectsPredator(self, id, epoch = epoch, turn=turn):
         
     def preyIsAtLimits(self,id,epoch = epoch, turn = turn):
-            
+        UP = 0
+        DOWN = 0
+        LEFT = 0
+        RIGHT = 0        
+        
+        if self.getPrey(id).get_Y(epoch = epoch,turn = turn) == 0:
+            UP = 1
+        else:
+            if self.getPrey(id).get_Y(epoch = epoch,turn = turn) == self.sizeY:
+                DOWN = 1
+        
+        if self.getPrey(id).get_X(epoch = epoch,turn = turn) == 0:
+            LEFT = 1
+        else:
+            if self.getPrey(id).get_X(epoch = epoch,turn = turn) == self.sizeX:
+                RIGHT = 1
+        
+        aux_bool = np.empty((1,4))
+        aux_bool[0,0] = UP
+        aux_bool[0,1] = RIGHT
+        aux_bool[0,2] = DOWN
+        aux_bool[0,3] = LEFT
+        
+        return aux_bool
+                
         
     
     ## MLP entry data generator for predators
     
     def predatorHowMuchFromLimits(self,id, turn = turn, epoch = epoch):
+        UP = 0
+        DOWN = 0
+        LEFT = 0
+        RIGHT = 0
         
-    def predatorWhatWasLastMove(self,id,turn = turn,epoch = epoch):
+        UP = self.getPredator(id).get_Y(epoch = epoch,turn = turn)
+        DOWN = self.sizeY - UP
+        LEFT = self.getPredator(id).get_X(epoch = epoch,turn = turn)
+        RIGHT = self.sizeX - LEFT
         
-    def predatorWherePreyMoved(self,id,turn = turn, epoch = epoch):
+        aux_bool = np.empty((1,4))
+        aux_bool[0,0] = UP / self.sizeY
+        aux_bool[0,1] = RIGHT / self.sizeX
+        aux_bool[0,2] = DOWN / self.sizeY
+        aux_bool[0,3] = LEFT / self.sizeX
+        
+        
+        
+        return aux_bool
+    #def predatorWhatWasLastMove(self,id,turn = turn,epoch = epoch):
+        
+    #def predatorWherePreyMoved(self,id,turn = turn, epoch = epoch):
         
     
         
     def predatorSeePrey(self, id,turn = turn,epoch = epoch):
-        UP = False
-        DOWN = False
-        LEFT = False
-        RIGHT = False
-        UP_RIGHT = False
-        UP_LEFT = False
-        DOWN_RIGHT = False
-        DOWN_LEFT = False
+        UP = 0
+        DOWN = 0
+        LEFT = 0
+        RIGHT = 0
+        UP_RIGHT = 0
+        UP_LEFT = 0
+        DOWN_RIGHT = 0
+        DOWN_LEFT = 0
         
         
         aux_predator = self.getPredator(id = id)
         
-        print("PREDATOR:")
-        print(aux_predator.get_X(epoch = epoch,turn = turn))
-        print(aux_predator.get_Y(epoch = epoch,turn = turn))        
         for i in range(0,self.num_preys):
-            print("PREY:")
-            
-            
             aux_prey = self.getPrey(id = i)
-            print(aux_prey.get_X(epoch = epoch,turn = turn))
-            print(aux_prey.get_Y(epoch = epoch,turn = turn))
-
-            
+                        
             # Same X position but the prey Y pos is higher
             if aux_prey.get_X(epoch = epoch,turn = turn) == aux_predator.get_X(epoch = epoch,turn = turn) and aux_prey.get_Y(epoch = epoch,turn = turn) > aux_predator.get_Y(epoch = epoch,turn = turn):
-                DOWN = True
+                DOWN = 1
             
             
             else:
                 # Same X position but the prey Y pos is lower    
                 if aux_prey.get_X(epoch = epoch,turn = turn) == aux_predator.get_X(epoch = epoch,turn = turn) and aux_prey.get_Y(epoch = epoch,turn = turn) < aux_predator.get_Y(epoch = epoch,turn = turn):
-                    UP = True
+                    UP = 1
                 else:
                     
                     # Same Y position but the prey X pos is higher
                     if aux_prey.get_Y(epoch = epoch,turn = turn) == aux_predator.get_Y(epoch = epoch,turn = turn) and aux_prey.get_X(epoch = epoch,turn = turn) > aux_predator.get_X(epoch = epoch,turn = turn):
-                        RIGHT = True
+                        RIGHT = 1
                     else:
                         
                         # Same Y position but the prey X pos is lower
                         if aux_prey.get_Y(epoch = epoch,turn = turn) == aux_predator.get_Y(epoch = epoch,turn = turn) and aux_prey.get_X(epoch = epoch,turn = turn) < aux_predator.get_X(epoch = epoch,turn = turn):
-                            LEFT = True
+                            LEFT = 1
                         else:
                             # The 
                             
@@ -210,16 +243,16 @@ class Board(object):
                             Y_diff = aux_prey.get_Y(epoch = epoch,turn = turn) - aux_predator.get_Y(epoch = epoch,turn = turn)
                             
                             if X_diff > 0 and Y_diff > 0 and np.abs(X_diff)==np.abs(Y_diff):
-                                DOWN_RIGHT = True
+                                DOWN_RIGHT = 1
                             else:
                                 if X_diff > 0 and Y_diff < 0 and np.abs(X_diff)==np.abs(Y_diff):
-                                    UP_RIGHT = True
+                                    UP_RIGHT = 1
                                 else:
                                     if X_diff < 0 and Y_diff < 0 and np.abs(X_diff)==np.abs(Y_diff):
-                                        UP_LEFT = True
+                                        UP_LEFT = 1
                                     else:
                                         if X_diff < 0 and Y_diff > 0 and np.abs(X_diff)==np.abs(Y_diff):
-                                            DOWN_LEFT = True
+                                            DOWN_LEFT = 1
                                         
                         
                             
@@ -228,7 +261,7 @@ class Board(object):
             
         
              
-        aux_bool = np.empty((1,8),dtype = bool)
+        aux_bool = np.empty((1,8))
         aux_bool[0,0] = UP
         aux_bool[0,1] = UP_RIGHT
         aux_bool[0,2] = RIGHT
