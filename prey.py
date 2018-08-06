@@ -20,10 +20,12 @@ class Prey(object):
     _x_pos = 0
     _y_pos = 0
     
-    def __init__(self,num_epochs,num_turns):
+    _smell_range = 3
+    
+    def __init__(self,num_epochs,num_turns,smell_range = 3):
         self._x_pos = np.ones((num_epochs,num_turns))
         self._y_pos = np.ones((num_epochs,num_turns))
-    
+        self._smell_range = smell_range
     
     def get_X(self,epoch=0,turn=0):
         return int(self._x_pos[epoch,turn])
@@ -36,3 +38,9 @@ class Prey(object):
     
     def set_Y(self,Y,epoch=0,turn=0):
         self._y_pos[epoch,turn] = Y
+        
+    def get_smell_range(self):
+        return self._smell_range
+    
+    def set_smell_range(self,range):
+        self._smell_range = range
