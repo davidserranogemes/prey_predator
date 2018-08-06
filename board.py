@@ -143,7 +143,45 @@ class Board(object):
         self.epoch = self.epoch +1
     
     ## MLP entry data generator for preys
-    #def preyDetectsPredator(self, id, epoch = epoch, turn=turn):
+    def preyDetectsPredator(self, id, epoch = epoch, turn=turn):
+        # Calculate the manhattan distance and if it is less or equal 3 it detects the predator.ç
+        # 4 sensors 
+        UP = 0
+        DOWN = 0
+        LEFT = 0
+        RIGHT = 0
+        
+        aux_prey = self.getPrey(id)
+
+        for i in range(0,self.num_predators):
+            aux_predator = self.getPredator(id = i)
+            
+            x_difference = aux_prey.get_X(epoch = epoch,turn = turn) - aux_predator.get_X(epoch = epoch,turn = turn)
+            y_difference = aux_prey.get_Y(epoch = epoch,turn = turn) - aux_predator.get_Y(epoch = epoch,turn = turn)
+
+            manhattan_distance = np.abs(x_difference) + np.abs(y_difference)
+            
+            if manhattan_distance <= aux_prey.get_smell_range():
+                # Thre prey can smell the predator
+                if x_difference > 0 :
+                    LEFT = 1
+                else:
+                    if x_difference < 0:
+                        RIGHT = 1
+                
+                if y_difference > 0:
+                    UP = 1
+                else:
+                    if y_difference < 0:
+                        DOWN = 1
+        
+        aux_bool = np.empty((1,4))
+        aux_bool[0,0] = UP
+        aux_bool[0,1] = RIGHT
+        aux_bool[0,2] = DOWN
+        aux_bool[0,3] = LEFT
+        
+        return aux_bool
         
     def preyIsAtLimits(self,id,epoch = epoch, turn = turn):
         UP = 0
@@ -172,6 +210,13 @@ class Board(object):
         return aux_bool
                 
         
+    def preparePreyMLPData(self,id,epoch = epoch,turn = turn):
+        limits = self.preyIsAtLimits(id,epoch = epoch, turn = turn)
+        smell = self.preyDetectsPredator(id,epoch = epoch, turn = turn)
+    
+        data = np.concatenate([smell[0],limits[0]])
+        
+        return data
     
     ## MLP entry data generator for predators
     
