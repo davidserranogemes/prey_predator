@@ -181,7 +181,7 @@ class Board(object):
         aux_bool[0,2] = DOWN
         aux_bool[0,3] = LEFT
         
-        return aux_bool
+        return aux_bool[0]
         
     def preyIsAtLimits(self,id,epoch = epoch, turn = turn):
         UP = 0
@@ -207,14 +207,14 @@ class Board(object):
         aux_bool[0,2] = DOWN
         aux_bool[0,3] = LEFT
         
-        return aux_bool
+        return aux_bool[0]
                 
         
     def preparePreyMLPData(self,id,epoch = epoch,turn = turn):
         limits = self.preyIsAtLimits(id,epoch = epoch, turn = turn)
         smell = self.preyDetectsPredator(id,epoch = epoch, turn = turn)
     
-        data = np.concatenate([smell[0],limits[0]])
+        data = np.concatenate([smell,limits])
         
         return data
     
@@ -239,11 +239,53 @@ class Board(object):
         
         
         
-        return aux_bool
-    #def predatorWhatWasLastMove(self,id,turn = turn,epoch = epoch):
+        return aux_bool[0]
+    
+    def predatorWhatWasLastMove(self,id,turn = turn,epoch = epoch):
+        UP = 0
+        DOUBLE_UP = 0
+        RIGHT = 0
+        DOUBLE_RIGHT = 0
+        DOWN = 0
+        DOUBLE_DOWN = 0
+        LEFT = 0
+        DOUBLE_LEFT = 0
+        STAND = 0
         
-    #def predatorWherePreyMoved(self,id,turn = turn, epoch = epoch):
+        aux_bool = np.empty((1,9))
+        aux_bool[0,0] = UP
+        aux_bool[0,1] = DOUBLE_UP
+        aux_bool[0,2] = RIGHT
+        aux_bool[0,3] = DOUBLE_RIGHT
+        aux_bool[0,4] = DOWN
+        aux_bool[0,5] = DOUBLE_DOWN
+        aux_bool[0,6] = LEFT
+        aux_bool[0,7] = DOUBLE_LEFT
+        aux_bool[0,8] = STAND
         
+        return aux_bool[0]
+        
+    def predatorWherePreyMoved(self,id,turn = turn, epoch = epoch):
+        UP = 0
+        DOWN = 0
+        LEFT = 0
+        RIGHT = 0
+        UP_RIGHT = 0
+        UP_LEFT = 0
+        DOWN_RIGHT = 0
+        DOWN_LEFT = 0
+                    
+        aux_bool = np.empty((1,8))
+        aux_bool[0,0] = UP
+        aux_bool[0,1] = UP_RIGHT
+        aux_bool[0,2] = RIGHT
+        aux_bool[0,3] = DOWN_RIGHT
+        aux_bool[0,4] = DOWN
+        aux_bool[0,5] = DOWN_LEFT
+        aux_bool[0,6] = LEFT
+        aux_bool[0,7] = UP_LEFT
+        
+        return aux_bool[0]   
     
         
     def predatorSeePrey(self, id,turn = turn,epoch = epoch):
@@ -316,4 +358,16 @@ class Board(object):
         aux_bool[0,6] = LEFT
         aux_bool[0,7] = UP_LEFT
         
-        return aux_bool
+        return aux_bool[0]
+    
+    def preparePredatorMLPData(self,id,epoch = epoch,turn = turn):
+        sight = self.predatorSeePrey(id = id,turn = turn,epoch =epoch)
+        limits =self.predatorHowMuchFromLimits(id = id,turn = turn,epoch =epoch)
+        last_move_predator = self.predatorWhatWasLastMove(id = id,turn = turn,epoch =epoch)
+        last_move_prey = self.predatorWherePreyMoved(id = id,turn = turn,epoch =epoch)
+        
+        data = np.concatenate([sight,limits,last_move_predator,last_move_prey])
+        
+        return data
+        
+        
