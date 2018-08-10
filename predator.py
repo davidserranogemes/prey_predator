@@ -20,11 +20,15 @@ class Predator(object):
     _x_pos = 0
     _y_pos = 0
     
+    _data_register_list = 0
     
     def __init__(self,num_epochs,num_turns):
         self._x_pos = np.ones((num_epochs,num_turns))
         self._y_pos = np.ones((num_epochs,num_turns))
-    
+        
+        #self._data_register_list = list()
+        #self._data_register_list.insert(0,pd.DataFrame(np.random.randint(low=0, high=10, size=(0, 16)), columns = ['Predator UP','Predator RIGHT','Predator DOWN','Predator RIGHT','Limit UP','Limit RIGHT','Limit DOWN','Limit LEFT','Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT']))
+        
     
     def get_X(self,epoch=0,turn=0):
         return int(self._x_pos[epoch,turn])
