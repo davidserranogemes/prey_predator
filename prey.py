@@ -31,7 +31,7 @@ class Prey(object):
         self._smell_range = smell_range
         
         self._data_register_list = list()
-        self._data_register_list.insert(pd.DataFrame(np.random.randint(low=0, high=10, size=(0, 16)), columns = ['Predator UP','Predator RIGHT','Predator DOWN','Predator RIGHT','Limit UP','Limit RIGHT','Limit DOWN','Limit LEFT','Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT']))
+        self._data_register_list.insert(0,pd.DataFrame(np.random.randint(low=0, high=10, size=(0, 16)), columns = ['Predator UP','Predator RIGHT','Predator DOWN','Predator RIGHT','Limit UP','Limit RIGHT','Limit DOWN','Limit LEFT','Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT']))
         
         
     def get_X(self,epoch=0,turn=0):
@@ -42,8 +42,9 @@ class Prey(object):
     
     def get_smell_range(self):
         return self._smell_range
+    
     def add_register(self, register,epoch):
-        if len(self._data_register_list) >= epoch:
+        if len(self._data_register_list) > epoch:
             #Add the register normally
             self._data_register_list[epoch].loc[len(self._data_register_list[epoch])] = register
         else:
@@ -54,7 +55,36 @@ class Prey(object):
             else:
                 print("Selected epoch is too big")
     
-                
+    def select_movement(self,data_entry):
+        UP = 0
+        DOWN = 0
+        LEFT = 0
+        RIGHT = 0
+        UP_RIGHT = 0
+        UP_LEFT = 0
+        DOWN_RIGHT = 0
+        DOWN_LEFT = 0
+                    
+        aux_bool = np.empty((1,8))
+        aux_bool[0,0] = UP
+        aux_bool[0,1] = UP_RIGHT
+        aux_bool[0,2] = RIGHT
+        aux_bool[0,3] = DOWN_RIGHT
+        aux_bool[0,4] = DOWN
+        aux_bool[0,5] = DOWN_LEFT
+        aux_bool[0,6] = LEFT
+        aux_bool[0,7] = UP_LEFT
+        
+        return aux_bool[0]
+    
+    def prepare_register(self,data_entry,movement):
+        return np.concatenate([data_entry,movement])
+    
+    def access_register(self,epoch):
+        if epoch < len(self._data_register_list):
+            return self._data_register_list[epoch]
+        else:
+            print("Selected epoch is too big")
     
     
     def set_X(self,x,epoch=0,turn=0):
