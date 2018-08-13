@@ -25,11 +25,11 @@ BOARD_SIZE_Y = 10
 
 
 # Each epoch has X turns. If the predator catches the prey the epoch end
-num_turns = 100
+num_turns = 1
 
 
 # Every epoch ends with a new training of the model
-num_epoch = 200
+num_epoch = 1
 
 
 # Lists of bidimensional array from np.array
@@ -37,20 +37,28 @@ num_epoch = 200
 # The boards have a list of at least num_turns BOARD x BOARD size.  All elements are 0 except the prey and the predator which takes -1 and +1 values
 BOARD = board.Board(num_preys = NUM_PREYS,num_predators = NUM_PREDATORS,board_size_x = BOARD_SIZE_X,board_size_y = BOARD_SIZE_Y)
 
-
-
-ALL_PREY_ACTIONS = list()
-ALL_PREDATOR_ACTIONS = list()
-
-# Array of prey´s fitness and the predator´s fitness
-ALL_PREDATOR_FITNESS = np.zeros(1,num_epoch)
-ALL_PREY_FITNESS = np.zeros(1,num_epoch)
-
 # Vector of winners in every epoch. TRUE the predator wins, FALSE the prey win
 # We suppose that the prey wins
 VICTORIES = [False] * num_epoch
 
+
+###DEBUG#####
+
+prey_test = BOARD.getPrey(id=0)
+predator_test = BOARD.getPredator(id=0)
+
+data_entry = BOARD.preparePredatorMLPData(id=0) 
+movement = predator_test.select_movement(data_entry)
+register = predator_test.prepare_register(data_entry,movement)
+predator_test.add_register(register,epoch = 0)
+
+
+
+####END DEBUG#####
+
+
 for epoch in range(0, num_epoch):
+    print(f"EPOCH: {epoch}")
     # We start the epoch
     # We create a list of boards and a list of actions for the prey and the predator.
 
@@ -69,6 +77,7 @@ for epoch in range(0, num_epoch):
     
     #We start the turns. 
     for turn in range(0,num_turns):
+        print(f"TURN: {turn}")
         # We save the state of the  board in the list
         
         # We ask the prey and the predator to move based on the actual board
