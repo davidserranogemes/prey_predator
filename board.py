@@ -242,50 +242,96 @@ class Board(object):
         return aux_bool[0]
     
     def predatorWhatWasLastMove(self,id,turn = turn,epoch = epoch):
-        UP = 0
-        DOUBLE_UP = 0
-        RIGHT = 0
-        DOUBLE_RIGHT = 0
-        DOWN = 0
-        DOUBLE_DOWN = 0
-        LEFT = 0
-        DOUBLE_LEFT = 0
-        STAND = 0
+
+        if turn != 0:
+            
+            aux_predator = self.getPredator(id = id)
         
-        aux_bool = np.empty((1,9))
-        aux_bool[0,0] = UP
-        aux_bool[0,1] = DOUBLE_UP
-        aux_bool[0,2] = RIGHT
-        aux_bool[0,3] = DOUBLE_RIGHT
-        aux_bool[0,4] = DOWN
-        aux_bool[0,5] = DOUBLE_DOWN
-        aux_bool[0,6] = LEFT
-        aux_bool[0,7] = DOUBLE_LEFT
-        aux_bool[0,8] = STAND
+            df = aux_predator.access_register(epoch=epoch)
+            
+            vector_data = df[turn:turn+1]
         
-        return aux_bool[0]
+            return np.array(vector_data[['Last Move Predator UP','Last Move Predator DOUBLE-UP','Last Move Predator RIGHT','Last Move Predator DOUBLE-RIGHT','Last Move Predator DOWN','Last Move Predator DOUBLE-DOWN','Last Move Predator LEFT','Last Move Predator DOUBLE-LEFT','Last Move Predator STAND']])[0]
+        
+        else:
+            UP = 0
+            DOUBLE_UP = 0
+            RIGHT = 0
+            DOUBLE_RIGHT = 0
+            DOWN = 0
+            DOUBLE_DOWN = 0
+            LEFT = 0
+            DOUBLE_LEFT = 0
+            STAND = 0
+ 
+            aux_bool = np.empty((1,9))
+            aux_bool[0,0] = UP
+            aux_bool[0,1] = DOUBLE_UP
+            aux_bool[0,2] = RIGHT
+            aux_bool[0,3] = DOUBLE_RIGHT
+            aux_bool[0,4] = DOWN
+            aux_bool[0,5] = DOUBLE_DOWN
+            aux_bool[0,6] = LEFT
+            aux_bool[0,7] = DOUBLE_LEFT
+            aux_bool[0,8] = STAND
+        
+            return aux_bool[0]
         
     def predatorWherePreyMoved(self,id,turn = turn, epoch = epoch):
-        UP = 0
-        DOWN = 0
-        LEFT = 0
-        RIGHT = 0
-        UP_RIGHT = 0
-        UP_LEFT = 0
-        DOWN_RIGHT = 0
-        DOWN_LEFT = 0
-                    
-        aux_bool = np.empty((1,8))
-        aux_bool[0,0] = UP
-        aux_bool[0,1] = UP_RIGHT
-        aux_bool[0,2] = RIGHT
-        aux_bool[0,3] = DOWN_RIGHT
-        aux_bool[0,4] = DOWN
-        aux_bool[0,5] = DOWN_LEFT
-        aux_bool[0,6] = LEFT
-        aux_bool[0,7] = UP_LEFT
+        if turn != 0:
+            '''
+            aux_predator = self.getPredator(id = id)
         
-        return aux_bool[0]   
+            df = aux_predator.access_register(epoch=epoch)
+            
+            vector_data = df[turn:turn+1]
+        
+            return np.array(vector_data[['Last Move Predator UP','Last Move Predator DOUBLE-UP','Last Move Predator RIGHT','Last Move Predator DOUBLE-RIGHT','Last Move Predator DOWN','Last Move Predator DOUBLE-DOWN','Last Move Predator LEFT','Last Move Predator DOUBLE-LEFT','Last Move Predator STAND']])[0]
+            '''
+            UP = 0
+            DOWN = 0
+            LEFT = 0
+            RIGHT = 0
+            UP_RIGHT = 0
+            UP_LEFT = 0
+            DOWN_RIGHT = 0
+            DOWN_LEFT = 0
+                        
+            aux_bool = np.empty((1,8))
+            aux_bool[0,0] = UP
+            aux_bool[0,1] = UP_RIGHT
+            aux_bool[0,2] = RIGHT
+            aux_bool[0,3] = DOWN_RIGHT
+            aux_bool[0,4] = DOWN
+            aux_bool[0,5] = DOWN_LEFT
+            aux_bool[0,6] = LEFT
+            aux_bool[0,7] = UP_LEFT
+            
+            return aux_bool[0]   
+    
+            
+        else:
+        
+            UP = 0
+            DOWN = 0
+            LEFT = 0
+            RIGHT = 0
+            UP_RIGHT = 0
+            UP_LEFT = 0
+            DOWN_RIGHT = 0
+            DOWN_LEFT = 0
+                        
+            aux_bool = np.empty((1,8))
+            aux_bool[0,0] = UP
+            aux_bool[0,1] = UP_RIGHT
+            aux_bool[0,2] = RIGHT
+            aux_bool[0,3] = DOWN_RIGHT
+            aux_bool[0,4] = DOWN
+            aux_bool[0,5] = DOWN_LEFT
+            aux_bool[0,6] = LEFT
+            aux_bool[0,7] = UP_LEFT
+            
+            return aux_bool[0]   
     
         
     def predatorSeePrey(self, id,turn = turn,epoch = epoch):
