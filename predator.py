@@ -9,6 +9,7 @@ This file contains the object predator
 
 from sklearn.neural_network import MLPClassifier
 import numpy as np
+import pandas as pd
 
 class PredatorAI:
     brain = 0
@@ -26,8 +27,8 @@ class Predator(object):
         self._x_pos = np.ones((num_epochs,num_turns))
         self._y_pos = np.ones((num_epochs,num_turns))
         
-        #self._data_register_list = list()
-        #self._data_register_list.insert(0,pd.DataFrame(np.random.randint(low=0, high=10, size=(0, 16)), columns = ['Predator UP','Predator RIGHT','Predator DOWN','Predator RIGHT','Limit UP','Limit RIGHT','Limit DOWN','Limit LEFT','Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT']))
+        self._data_register_list = list()
+        self._data_register_list.insert(0,pd.DataFrame(np.random.randint(low=0, high=10, size=(0, 38)), columns = ['Prey UP','Prey UP-RIGHT','Prey RIGHT','Prey DOWN-RIGHT','Prey DOWN','Prey DOWN-LEFT','Prey LEFT','Prey UP-LEFT','From Limit UP','From Limit RIGHT','From Limit DOWN','From Limit LEFT','Last Move Predator UP','Last Move Predator DOUBLE-UP','Last Move Predator RIGHT','Last Move Predator DOUBLE-RIGHT','Last Move Predator DOWN','Last Move Predator DOUBLE-DOWN','Last Move Predator LEFT','Last Move Predator DOUBLE-LEFT','Last Move Predator STAND','Last Move Prey UP','Last Move Prey UP-RIGHT','Last Move Prey RIGHT','Last Move Prey DOWN-RIGHT','Last Move Prey DOWN','Last Move Prey DOWN-LEFT','Last Move Prey LEFT','Last Move Prey UP-LEFT','GO UP','GO DOUBLE-UP','GO RIGHT','GO DOUBLE-RIGHT','GO DOWN','GO DOUBLE-DOWN','GO LEFT','GO DOUBLE-LEFT','STAND']))
         
     
     def get_X(self,epoch=0,turn=0):
@@ -36,8 +37,58 @@ class Predator(object):
     def get_Y(self,epoch=0,turn=0):
         return int(self._y_pos[epoch,turn])
     
+    def add_register(self, register,epoch):
+        print(len(self._data_register_list))
+        print(epoch)
+        
+        if len(self._data_register_list) > epoch:
+            #Add the register normally
+            self._data_register_list[epoch].loc[len(self._data_register_list[epoch])] = register
+        else:
+            if len(self._data_register_list) == epoch:
+                #Create new  dataframe to the list and add the first register
+                self._data_register_list.append(pd.DataFrame(np.random.randint(low=0, high=10, size=(0, 38)), columns = ['Prey UP','Prey UP-RIGHT','Prey RIGHT','Prey DOWN-RIGHT','Prey DOWN','Prey DOWN-LEFT','Prey LEFT','Prey UP-LEFT','From Limit UP','From Limit RIGHT','From Limit DOWN','From Limit LEFT','Last Move Predator UP','Last Move Predator DOUBLE-UP','Last Move Predator RIGHT','Last Move Predator DOUBLE-RIGHT','Last Move Predator DOWN','Last Move Predator DOUBLE-DOWN','Last Move Predator LEFT','Last Move Predator DOUBLE-LEFT','Last Move Predator STAND','Last Move Prey UP','Last Move Prey UP-RIGHT','Last Move Prey RIGHT','Last Move Prey DOWN-RIGHT','Last Move Prey DOWN','Last Move Prey DOWN-LEFT','Last Move Prey LEFT','Last Move Prey UP-LEFT','GO UP','GO DOUBLE-UP','GO RIGHT','GO DOUBLE-RIGHT','GO DOWN','GO DOUBLE-DOWN','GO LEFT','GO DOUBLE-LEFT','STAND']))
+                self._data_register_list[epoch].loc[len(self._data_register_list[epoch])] = register
+            else:
+                print("Selected epoch is too big")
+    
+    
     def set_X(self,x,epoch=0,turn=0):
         self._x_pos[epoch,turn] = x 
     
     def set_Y(self,Y,epoch=0,turn=0):
         self._y_pos[epoch,turn] = Y
+        
+    def select_movement(self,data_entry):
+        UP = 0
+        DOUBLE_UP = 0
+        RIGHT = 0
+        DOUBLE_RIGHT = 0
+        DOWN = 0
+        DOUBLE_DOWN = 0
+        LEFT = 0
+        DOUBLE_LEFT = 0
+        STAND = 0
+                    
+        aux_bool = np.empty((1,9))
+        aux_bool[0,0] = UP
+        aux_bool[0,1] = DOUBLE_UP
+        aux_bool[0,2] = RIGHT
+        aux_bool[0,3] = DOUBLE_RIGHT
+        aux_bool[0,4] = DOWN
+        aux_bool[0,5] = DOUBLE_DOWN
+        aux_bool[0,6] = LEFT
+        aux_bool[0,7] = DOUBLE_LEFT
+        aux_bool[0,8] = STAND
+        
+        return aux_bool[0]
+    
+    def prepare_register(self,data_entry,movement):
+        return np.concatenate([data_entry,movement])
+    
+    def access_register(self,epoch):
+        if epoch < len(self._data_register_list):
+            return self._data_register_list[epoch]
+        else:
+            print("Selected epoch is too big")
+    
