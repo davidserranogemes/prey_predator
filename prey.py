@@ -25,9 +25,13 @@ class Prey(object):
     
     _data_register_list = 0
     
+    MOVE_X = 0
+    MOVE_Y = 0
+    
+    
     def __init__(self,num_epochs,num_turns,smell_range = 3):
-        self._x_pos = np.ones((num_epochs,num_turns))
-        self._y_pos = np.ones((num_epochs,num_turns))
+        self._x_pos = np.ones((num_epochs,num_turns+1))
+        self._y_pos = np.ones((num_epochs,num_turns+1))
         self._smell_range = smell_range
         
         self._data_register_list = list()
@@ -44,9 +48,7 @@ class Prey(object):
         return self._smell_range
     
     def add_register(self, register,epoch):
-        print(len(self._data_register_list))
-        print(epoch)
-        
+       
         if len(self._data_register_list) > epoch:
             #Add the register normally
             self._data_register_list[epoch].loc[len(self._data_register_list[epoch])] = register
@@ -98,4 +100,8 @@ class Prey(object):
         
     def set_smell_range(self,range):
         self._smell_range = range
+        
+    def move(self,epoch,turn):
+        self._x_pos[epoch,turn+1] = self._x_pos[epoch,turn] + self.MOVE_X
+        self._y_pos[epoch,turn+1] = self._y_pos[epoch,turn] + self.MOVE_Y
         

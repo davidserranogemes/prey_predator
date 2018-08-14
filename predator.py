@@ -22,10 +22,13 @@ class Predator(object):
     _y_pos = 0
     
     _data_register_list = 0
+
+    MOVE_X = 0
+    MOVE_Y = 0
     
     def __init__(self,num_epochs,num_turns):
-        self._x_pos = np.ones((num_epochs,num_turns))
-        self._y_pos = np.ones((num_epochs,num_turns))
+        self._x_pos = np.ones((num_epochs,num_turns+1))
+        self._y_pos = np.ones((num_epochs,num_turns+1))
         
         self._data_register_list = list()
         self._data_register_list.insert(0,pd.DataFrame(np.random.randint(low=0, high=10, size=(0, 38)), columns = ['Prey UP','Prey UP-RIGHT','Prey RIGHT','Prey DOWN-RIGHT','Prey DOWN','Prey DOWN-LEFT','Prey LEFT','Prey UP-LEFT','From Limit UP','From Limit RIGHT','From Limit DOWN','From Limit LEFT','Last Move Predator UP','Last Move Predator DOUBLE-UP','Last Move Predator RIGHT','Last Move Predator DOUBLE-RIGHT','Last Move Predator DOWN','Last Move Predator DOUBLE-DOWN','Last Move Predator LEFT','Last Move Predator DOUBLE-LEFT','Last Move Predator STAND','Last Move Prey UP','Last Move Prey UP-RIGHT','Last Move Prey RIGHT','Last Move Prey DOWN-RIGHT','Last Move Prey DOWN','Last Move Prey DOWN-LEFT','Last Move Prey LEFT','Last Move Prey UP-LEFT','GO UP','GO DOUBLE-UP','GO RIGHT','GO DOUBLE-RIGHT','GO DOWN','GO DOUBLE-DOWN','GO LEFT','GO DOUBLE-LEFT','STAND']))
@@ -38,8 +41,6 @@ class Predator(object):
         return int(self._y_pos[epoch,turn])
     
     def add_register(self, register,epoch):
-        print(len(self._data_register_list))
-        print(epoch)
         
         if len(self._data_register_list) > epoch:
             #Add the register normally
@@ -92,3 +93,7 @@ class Predator(object):
         else:
             print("Selected epoch is too big")
     
+    def move(self,epoch,turn):
+        self._x_pos[epoch,turn+1] = self._x_pos[epoch,turn] + self.MOVE_X
+        self._y_pos[epoch,turn+1] = self._y_pos[epoch,turn] + self.MOVE_Y
+        
