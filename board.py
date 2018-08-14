@@ -211,8 +211,9 @@ class Board(object):
                 
         
     def preparePreyMLPData(self,id,epoch = epoch,turn = turn):
-        limits = self.preyIsAtLimits(id,epoch = epoch, turn = turn)
-        smell = self.preyDetectsPredator(id,epoch = epoch, turn = turn)
+        #Smell and limits consults current positions, but in predator we ask for logs from last turn
+        limits = self.preyIsAtLimits(id,epoch = epoch, turn = turn+1)
+        smell = self.preyDetectsPredator(id,epoch = epoch, turn = turn+1)
     
         data = np.concatenate([smell,limits])
         
@@ -242,8 +243,9 @@ class Board(object):
         return aux_bool[0]
     
     def predatorWhatWasLastMove(self,id,turn = turn,epoch = epoch):
-
-        if turn != 0:
+        print(turn)
+        print(epoch)
+        if turn >= 0:
             
             aux_predator = self.getPredator(id = id)
         
@@ -278,37 +280,134 @@ class Board(object):
             return aux_bool[0]
         
     def predatorWherePreyMoved(self,id,turn = turn, epoch = epoch):
-        if turn != 0:
-            '''
+        if turn >= 0:
+            
             aux_predator = self.getPredator(id = id)
         
             df = aux_predator.access_register(epoch=epoch)
             
             vector_data = df[turn:turn+1]
         
-            return np.array(vector_data[['Last Move Predator UP','Last Move Predator DOUBLE-UP','Last Move Predator RIGHT','Last Move Predator DOUBLE-RIGHT','Last Move Predator DOWN','Last Move Predator DOUBLE-DOWN','Last Move Predator LEFT','Last Move Predator DOUBLE-LEFT','Last Move Predator STAND']])[0]
-            '''
-            UP = 0
-            DOWN = 0
-            LEFT = 0
-            RIGHT = 0
-            UP_RIGHT = 0
-            UP_LEFT = 0
-            DOWN_RIGHT = 0
-            DOWN_LEFT = 0
+            moves = np.array(vector_data[['Prey UP','Prey UP-RIGHT','Prey RIGHT','Prey DOWN-RIGHT','Prey DOWN','Prey DOWN-LEFT','Prey LEFT','Prey UP-LEFT']])[0]
+                
+            if np.any(moves):
+                aux_bool = np.zeros((1,8))
+                aux_bool = aux_bool[0]
+                
+                for  i in range(0,self.num_preys):
+                    aux_prey = self.getPrey(id=i)
+                    if aux_prey.get_X(epoch = epoch,turn = turn) == aux_predator.get_X(epoch = epoch,turn = turn) and aux_prey.get_Y(epoch = epoch,turn = turn) > aux_predator.get_Y(epoch = epoch,turn = turn):
+                        prey_df = aux_prey.access_register(epoch=epoch)
                         
-            aux_bool = np.empty((1,8))
-            aux_bool[0,0] = UP
-            aux_bool[0,1] = UP_RIGHT
-            aux_bool[0,2] = RIGHT
-            aux_bool[0,3] = DOWN_RIGHT
-            aux_bool[0,4] = DOWN
-            aux_bool[0,5] = DOWN_LEFT
-            aux_bool[0,6] = LEFT
-            aux_bool[0,7] = UP_LEFT
-            
-            return aux_bool[0]   
+                        vector_data = prey_df[turn:turn+1]
+                        
+                        prey_moves = np.array(vector_data[['Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT']])[0]
+                        
+                        aux_bool = aux_bool + prey_moves
+                        
+                    else:
+                        # Same X position but the prey Y pos is lower    
+                        if aux_prey.get_X(epoch = epoch,turn = turn) == aux_predator.get_X(epoch = epoch,turn = turn) and aux_prey.get_Y(epoch = epoch,turn = turn) < aux_predator.get_Y(epoch = epoch,turn = turn):
+                            prey_df = aux_prey.access_register(epoch=epoch)
+                            
+                            vector_data = prey_df[turn:turn+1]
+                            
+                            prey_moves = np.array(vector_data[['Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT']])[0]
+                            
+                            aux_bool = aux_bool + prey_moves
+                        else:
+                            
+                            # Same Y position but the prey X pos is higher
+                            if aux_prey.get_Y(epoch = epoch,turn = turn) == aux_predator.get_Y(epoch = epoch,turn = turn) and aux_prey.get_X(epoch = epoch,turn = turn) > aux_predator.get_X(epoch = epoch,turn = turn):
+                                prey_df = aux_prey.access_register(epoch=epoch)
+                                
+                                vector_data = prey_df[turn:turn+1]
+                                
+                                prey_moves = np.array(vector_data[['Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT']])[0]
+                                
+                                aux_bool = aux_bool + prey_moves
+                            else:
+                                
+                                # Same Y position but the prey X pos is lower
+                                if aux_prey.get_Y(epoch = epoch,turn = turn) == aux_predator.get_Y(epoch = epoch,turn = turn) and aux_prey.get_X(epoch = epoch,turn = turn) < aux_predator.get_X(epoch = epoch,turn = turn):
+                                    prey_df = aux_prey.access_register(epoch=epoch)
+                                    
+                                    vector_data = prey_df[turn:turn+1]
+                                    
+                                    prey_moves = np.array(vector_data[['Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT']])[0]
+                                    
+                                    aux_bool = aux_bool + prey_moves
+                                else:
+                                    # The 
+                                    
+                                    X_diff = aux_prey.get_X(epoch = epoch,turn = turn) - aux_predator.get_X(epoch = epoch,turn = turn)
+                                    Y_diff = aux_prey.get_Y(epoch = epoch,turn = turn) - aux_predator.get_Y(epoch = epoch,turn = turn)
+                                    
+                                    if X_diff > 0 and Y_diff > 0 and np.abs(X_diff)==np.abs(Y_diff):
+                                        prey_df = aux_prey.access_register(epoch=epoch)
+                                        
+                                        vector_data = prey_df[turn:turn+1]
+                                        
+                                        prey_moves = np.array(vector_data[['Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT']])[0]
+                                        
+                                        aux_bool = aux_bool + prey_moves
+                                    else:
+                                        if X_diff > 0 and Y_diff < 0 and np.abs(X_diff)==np.abs(Y_diff):
+                                            prey_df = aux_prey.access_register(epoch=epoch)
+                                            
+                                            vector_data = prey_df[turn:turn+1]
+                                            
+                                            prey_moves = np.array(vector_data[['Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT']])[0]
+                                            
+                                            aux_bool = aux_bool + prey_moves
+                                        else:
+                                            if X_diff < 0 and Y_diff < 0 and np.abs(X_diff)==np.abs(Y_diff):
+                                                prey_df = aux_prey.access_register(epoch=epoch)
+                                                
+                                                vector_data = prey_df[turn:turn+1]
+                                                
+                                                prey_moves = np.array(vector_data[['Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT']])[0]
+                                                
+                                                aux_bool = aux_bool + prey_moves
+                                            else:
+                                                if X_diff < 0 and Y_diff > 0 and np.abs(X_diff)==np.abs(Y_diff):
+                                                    prey_df = aux_prey.access_register(epoch=epoch)
+                                            
+                                                    vector_data = prey_df[turn:turn+1]
+                                                    
+                                                    prey_moves = np.array(vector_data[['Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT']])[0]
+                                                    
+                                                    aux_bool = aux_bool + prey_moves
+                            
+
+                
+                for i in range(0,len(aux_bool)):
+                    if aux_bool[i] > 1:
+                        aux_bool[i] = 1
+                return aux_bool
+            else:
     
+                UP = 0
+                DOWN = 0
+                LEFT = 0
+                RIGHT = 0
+                UP_RIGHT = 0
+                UP_LEFT = 0
+                DOWN_RIGHT = 0
+                DOWN_LEFT = 0
+                            
+                aux_bool = np.empty((1,8))
+                aux_bool[0,0] = UP
+                aux_bool[0,1] = UP_RIGHT
+                aux_bool[0,2] = RIGHT
+                aux_bool[0,3] = DOWN_RIGHT
+                aux_bool[0,4] = DOWN
+                aux_bool[0,5] = DOWN_LEFT
+                aux_bool[0,6] = LEFT
+                aux_bool[0,7] = UP_LEFT
+                
+                return aux_bool[0]   
+        
             
         else:
         
@@ -353,8 +452,7 @@ class Board(object):
             # Same X position but the prey Y pos is higher
             if aux_prey.get_X(epoch = epoch,turn = turn) == aux_predator.get_X(epoch = epoch,turn = turn) and aux_prey.get_Y(epoch = epoch,turn = turn) > aux_predator.get_Y(epoch = epoch,turn = turn):
                 DOWN = 1
-            
-            
+                        
             else:
                 # Same X position but the prey Y pos is lower    
                 if aux_prey.get_X(epoch = epoch,turn = turn) == aux_predator.get_X(epoch = epoch,turn = turn) and aux_prey.get_Y(epoch = epoch,turn = turn) < aux_predator.get_Y(epoch = epoch,turn = turn):
@@ -407,8 +505,9 @@ class Board(object):
         return aux_bool[0]
     
     def preparePredatorMLPData(self,id,epoch = epoch,turn = turn):
-        sight = self.predatorSeePrey(id = id,turn = turn,epoch =epoch)
-        limits =self.predatorHowMuchFromLimits(id = id,turn = turn,epoch =epoch)
+        #Sight and limits consults current positions, while last move look to the register, which is empty at start.
+        sight = self.predatorSeePrey(id = id,turn = turn+1,epoch =epoch)
+        limits =self.predatorHowMuchFromLimits(id = id,turn = turn+1,epoch =epoch)
         last_move_predator = self.predatorWhatWasLastMove(id = id,turn = turn,epoch =epoch)
         last_move_prey = self.predatorWherePreyMoved(id = id,turn = turn,epoch =epoch)
         
@@ -416,4 +515,111 @@ class Board(object):
         
         return data
         
+    def decidePreyMove(self,id,epoch = epoch,turn = turn):
+        #Insert the movements and set the log
         
+        aux_prey = self.getPrey(id=id)
+        
+        MLPData = self.preparePreyMLPData(id,epoch=epoch,turn=turn)
+        
+        move = aux_prey.select_movement(MLPData)
+        
+        register = aux_prey.prepare_register(MLPData,move)
+        
+        aux_prey.add_register(register,epoch)
+        
+        aux_prey.MOVE_Y = 0
+        aux_prey.MOVE_X = 0
+        
+        
+        if move[0] ==1:
+            aux_prey.MOVE_Y = 1
+        else:
+            if move[1] ==1:
+                aux_prey.MOVE_Y = 1
+                aux_prey.MOVE_X = 1
+            else:
+                if move[2] ==1:
+                    aux_prey.MOVE_X = 1
+                else:
+                    if move[3] ==1:
+                        aux_prey.MOVE_Y = -1
+                        aux_prey.MOVE_X = 1
+                    else:
+                        if move[4] ==1:
+                            aux_prey.MOVE_Y = -1
+                        else:
+                            if move[5] ==1:
+                                aux_prey.MOVE_Y = -1
+                                aux_prey.MOVE_X = -1
+                            else:
+                                if move[6] ==1:
+                                    aux_prey.MOVE_X = -1
+                                else:
+                                    if move[7] ==1:
+                                        aux_prey.MOVE_Y = 1
+                                        aux_prey.MOVE_X = -1
+                                    
+                                        
+        
+        
+    def decidePredatorMove(self,id,epoch = epoch,turn = turn):
+        #Insert the movements and set the log
+        
+        aux_predator = self.getPredator(id=id)
+        
+        MLPData = self.preparePredatorMLPData(id,epoch=epoch,turn=turn)
+        
+        move = aux_predator.select_movement(MLPData)
+        
+        register = aux_predator.prepare_register(MLPData,move)
+        
+        aux_predator.add_register(register,epoch)
+        aux_predator.MOVE_Y = 0
+        aux_predator.MOVE_Z = 0
+        
+        if move[0] ==1:
+            aux_predator.MOVE_Y = 1
+        else:
+            if move[1] ==1:
+                aux_predator.MOVE_Y = 2
+                
+            else:
+                if move[2] ==1:
+                    aux_predator.MOVE_X = 1
+                else:
+                    if move[3] ==1:
+                        aux_predator.MOVE_X = 2
+                    else:
+                        if move[4] ==1:
+                            aux_predator.MOVE_Y = -1
+                        else:
+                            if move[5] ==1:
+                                aux_predator.MOVE_Y = -2
+                            else:
+                                if move[6] ==1:
+                                    aux_predator.MOVE_X = -1
+                                else:
+                                    if move[7] ==1:
+                                        aux_predator.MOVE_X = -2
+                                    
+                                        
+       
+        
+    def selectMoves(self,epoch = epoch, turn = turn):
+        for i in range(0,self.num_predators):
+            self.decidePredatorMove(id = i,epoch = epoch,turn = turn)
+        for i in range(0,self.num_preys):
+            self.decidePreyMove(id = i,epoch = epoch,turn = turn)
+                
+    
+    def commitMoves(self,epoch = epoch, turn = turn):
+        for i in range(0,self.num_predators):
+            aux_predator = self.getPredator(id=i)
+            
+            aux_predator.move(epoch = epoch, turn = turn)
+            
+        for i in range(0,self.num_preys):
+            aux_prey = self.getPrey(id=i)
+            
+            aux_prey.move(epoch = epoch, turn = turn)
