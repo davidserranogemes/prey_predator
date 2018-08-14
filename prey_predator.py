@@ -17,19 +17,19 @@ import predator
 
 
 #CONSTANT
-BOARD_SIZE = 10
+BOARD_SIZE = 5
 NUM_PREYS = 1
 NUM_PREDATORS = 1
-BOARD_SIZE_X = 10
-BOARD_SIZE_Y = 10
+BOARD_SIZE_X = 5
+BOARD_SIZE_Y = 5
 
 
 # Each epoch has X turns. If the predator catches the prey the epoch end
-num_turns = 1
+num_turns = 10
 
 
 # Every epoch ends with a new training of the model
-num_epoch = 1
+num_epoch = 2
 
 
 # Lists of bidimensional array from np.array
@@ -43,14 +43,6 @@ VICTORIES = [False] * num_epoch
 
 
 ###DEBUG#####
-
-prey_test = BOARD.getPrey(id=0)
-predator_test = BOARD.getPredator(id=0)
-
-data_entry = BOARD.preparePredatorMLPData(id=0) 
-movement = predator_test.select_movement(data_entry)
-register = predator_test.prepare_register(data_entry,movement)
-predator_test.add_register(register,epoch = 0)
 
 
 
@@ -78,11 +70,13 @@ for epoch in range(0, num_epoch):
     #We start the turns. 
     for turn in range(0,num_turns):
         print(f"TURN: {turn}")
-        # We save the state of the  board in the list
+        print(BOARD.getBoardMatrix())
         
         # We ask the prey and the predator to move based on the actual board
+        BOARD.selectMoves(epoch=epoch, turn = turn-1)
         
-        # We save the action  of both
+        #We apply the movement. This means that everyone move at the same time
+        BOARD.commitMoves(epoch = epoch, turn = turn)
         
         # We check if the prey has died
         
