@@ -26,6 +26,9 @@ class Board(object):
     prey_vector = np.empty((1,1),dtype = prey.Prey)
     predator_vector = np.empty((1,1),dtype = predator.Predator)
     
+    #It says if predators "Wins"
+    victory = False
+    
     
     def __init__(self, num_preys = 1, num_predators = 1,board_size_x = 10,board_size_y = 10, num_turns = 30, num_epochs = 100):
         self.num_turns = num_turns
@@ -33,6 +36,8 @@ class Board(object):
         
         self.num_predators = num_predators
         self.num_preys = num_preys
+        
+        self.victory = np.zeros((1,num_epochs),dtype=bool)[0]
         
         self.turn = 0
         self.epoch = 0
@@ -106,20 +111,16 @@ class Board(object):
     # This function return a matrix where the prey have the value -1 and the predators have the value +1
         
     
-    def getBoardMatrix(self):
+    def getBoardMatrix(self,epoch = epoch, turn = turn):
         
         matrix = np.zeros((self.sizeY+1,self.sizeX+1))
-        
-        
-        
-        
-        
-        
+    
         for i in range(0,self.prey_vector.size):
-            matrix[self.prey_vector[0,i].get_Y(),self.prey_vector[0,i].get_X()] = -1
+            if self.prey_vector[0,i].is_alive():
+                matrix[self.prey_vector[0,i].get_Y(epoch = epoch,turn = turn),self.prey_vector[0,i].get_X(epoch = epoch,turn = turn)] = -1
          
         for i in range(0,self.predator_vector.size):
-            matrix[self.predator_vector[0,i].get_Y(),self.predator_vector[0,i].get_X()] = 1
+            matrix[self.predator_vector[0,i].get_Y(epoch = epoch,turn = turn),self.predator_vector[0,i].get_X(epoch = epoch,turn = turn)] = 1
         
         return matrix
     
@@ -243,8 +244,7 @@ class Board(object):
         return aux_bool[0]
     
     def predatorWhatWasLastMove(self,id,turn = turn,epoch = epoch):
-        print(turn)
-        print(epoch)
+  
         if turn >= 0:
             
             aux_predator = self.getPredator(id = id)
@@ -296,18 +296,8 @@ class Board(object):
                 
                 for  i in range(0,self.num_preys):
                     aux_prey = self.getPrey(id=i)
-                    if aux_prey.get_X(epoch = epoch,turn = turn) == aux_predator.get_X(epoch = epoch,turn = turn) and aux_prey.get_Y(epoch = epoch,turn = turn) > aux_predator.get_Y(epoch = epoch,turn = turn):
-                        prey_df = aux_prey.access_register(epoch=epoch)
-                        
-                        vector_data = prey_df[turn:turn+1]
-                        
-                        prey_moves = np.array(vector_data[['Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT']])[0]
-                        
-                        aux_bool = aux_bool + prey_moves
-                        
-                    else:
-                        # Same X position but the prey Y pos is lower    
-                        if aux_prey.get_X(epoch = epoch,turn = turn) == aux_predator.get_X(epoch = epoch,turn = turn) and aux_prey.get_Y(epoch = epoch,turn = turn) < aux_predator.get_Y(epoch = epoch,turn = turn):
+                    if aux_prey.is_alive():
+                        if aux_prey.get_X(epoch = epoch,turn = turn) == aux_predator.get_X(epoch = epoch,turn = turn) and aux_prey.get_Y(epoch = epoch,turn = turn) > aux_predator.get_Y(epoch = epoch,turn = turn):
                             prey_df = aux_prey.access_register(epoch=epoch)
                             
                             vector_data = prey_df[turn:turn+1]
@@ -315,10 +305,10 @@ class Board(object):
                             prey_moves = np.array(vector_data[['Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT']])[0]
                             
                             aux_bool = aux_bool + prey_moves
-                        else:
                             
-                            # Same Y position but the prey X pos is higher
-                            if aux_prey.get_Y(epoch = epoch,turn = turn) == aux_predator.get_Y(epoch = epoch,turn = turn) and aux_prey.get_X(epoch = epoch,turn = turn) > aux_predator.get_X(epoch = epoch,turn = turn):
+                        else:
+                            # Same X position but the prey Y pos is lower    
+                            if aux_prey.get_X(epoch = epoch,turn = turn) == aux_predator.get_X(epoch = epoch,turn = turn) and aux_prey.get_Y(epoch = epoch,turn = turn) < aux_predator.get_Y(epoch = epoch,turn = turn):
                                 prey_df = aux_prey.access_register(epoch=epoch)
                                 
                                 vector_data = prey_df[turn:turn+1]
@@ -328,8 +318,8 @@ class Board(object):
                                 aux_bool = aux_bool + prey_moves
                             else:
                                 
-                                # Same Y position but the prey X pos is lower
-                                if aux_prey.get_Y(epoch = epoch,turn = turn) == aux_predator.get_Y(epoch = epoch,turn = turn) and aux_prey.get_X(epoch = epoch,turn = turn) < aux_predator.get_X(epoch = epoch,turn = turn):
+                                # Same Y position but the prey X pos is higher
+                                if aux_prey.get_Y(epoch = epoch,turn = turn) == aux_predator.get_Y(epoch = epoch,turn = turn) and aux_prey.get_X(epoch = epoch,turn = turn) > aux_predator.get_X(epoch = epoch,turn = turn):
                                     prey_df = aux_prey.access_register(epoch=epoch)
                                     
                                     vector_data = prey_df[turn:turn+1]
@@ -338,12 +328,9 @@ class Board(object):
                                     
                                     aux_bool = aux_bool + prey_moves
                                 else:
-                                    # The 
                                     
-                                    X_diff = aux_prey.get_X(epoch = epoch,turn = turn) - aux_predator.get_X(epoch = epoch,turn = turn)
-                                    Y_diff = aux_prey.get_Y(epoch = epoch,turn = turn) - aux_predator.get_Y(epoch = epoch,turn = turn)
-                                    
-                                    if X_diff > 0 and Y_diff > 0 and np.abs(X_diff)==np.abs(Y_diff):
+                                    # Same Y position but the prey X pos is lower
+                                    if aux_prey.get_Y(epoch = epoch,turn = turn) == aux_predator.get_Y(epoch = epoch,turn = turn) and aux_prey.get_X(epoch = epoch,turn = turn) < aux_predator.get_X(epoch = epoch,turn = turn):
                                         prey_df = aux_prey.access_register(epoch=epoch)
                                         
                                         vector_data = prey_df[turn:turn+1]
@@ -352,7 +339,12 @@ class Board(object):
                                         
                                         aux_bool = aux_bool + prey_moves
                                     else:
-                                        if X_diff > 0 and Y_diff < 0 and np.abs(X_diff)==np.abs(Y_diff):
+                                        # The 
+                                        
+                                        X_diff = aux_prey.get_X(epoch = epoch,turn = turn) - aux_predator.get_X(epoch = epoch,turn = turn)
+                                        Y_diff = aux_prey.get_Y(epoch = epoch,turn = turn) - aux_predator.get_Y(epoch = epoch,turn = turn)
+                                        
+                                        if X_diff > 0 and Y_diff > 0 and np.abs(X_diff)==np.abs(Y_diff):
                                             prey_df = aux_prey.access_register(epoch=epoch)
                                             
                                             vector_data = prey_df[turn:turn+1]
@@ -361,7 +353,7 @@ class Board(object):
                                             
                                             aux_bool = aux_bool + prey_moves
                                         else:
-                                            if X_diff < 0 and Y_diff < 0 and np.abs(X_diff)==np.abs(Y_diff):
+                                            if X_diff > 0 and Y_diff < 0 and np.abs(X_diff)==np.abs(Y_diff):
                                                 prey_df = aux_prey.access_register(epoch=epoch)
                                                 
                                                 vector_data = prey_df[turn:turn+1]
@@ -370,15 +362,24 @@ class Board(object):
                                                 
                                                 aux_bool = aux_bool + prey_moves
                                             else:
-                                                if X_diff < 0 and Y_diff > 0 and np.abs(X_diff)==np.abs(Y_diff):
+                                                if X_diff < 0 and Y_diff < 0 and np.abs(X_diff)==np.abs(Y_diff):
                                                     prey_df = aux_prey.access_register(epoch=epoch)
-                                            
+                                                    
                                                     vector_data = prey_df[turn:turn+1]
                                                     
                                                     prey_moves = np.array(vector_data[['Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT']])[0]
                                                     
                                                     aux_bool = aux_bool + prey_moves
-                            
+                                                else:
+                                                    if X_diff < 0 and Y_diff > 0 and np.abs(X_diff)==np.abs(Y_diff):
+                                                        prey_df = aux_prey.access_register(epoch=epoch)
+                                                
+                                                        vector_data = prey_df[turn:turn+1]
+                                                        
+                                                        prey_moves = np.array(vector_data[['Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT']])[0]
+                                                        
+                                                        aux_bool = aux_bool + prey_moves
+                                
 
                 
                 for i in range(0,len(aux_bool)):
@@ -448,43 +449,44 @@ class Board(object):
         
         for i in range(0,self.num_preys):
             aux_prey = self.getPrey(id = i)
-                        
-            # Same X position but the prey Y pos is higher
-            if aux_prey.get_X(epoch = epoch,turn = turn) == aux_predator.get_X(epoch = epoch,turn = turn) and aux_prey.get_Y(epoch = epoch,turn = turn) > aux_predator.get_Y(epoch = epoch,turn = turn):
-                DOWN = 1
-                        
-            else:
-                # Same X position but the prey Y pos is lower    
-                if aux_prey.get_X(epoch = epoch,turn = turn) == aux_predator.get_X(epoch = epoch,turn = turn) and aux_prey.get_Y(epoch = epoch,turn = turn) < aux_predator.get_Y(epoch = epoch,turn = turn):
-                    UP = 1
+            
+            if aux_prey.is_alive():                            
+                # Same X position but the prey Y pos is higher
+                if aux_prey.get_X(epoch = epoch,turn = turn) == aux_predator.get_X(epoch = epoch,turn = turn) and aux_prey.get_Y(epoch = epoch,turn = turn) > aux_predator.get_Y(epoch = epoch,turn = turn):
+                    DOWN = 1
+                            
                 else:
-                    
-                    # Same Y position but the prey X pos is higher
-                    if aux_prey.get_Y(epoch = epoch,turn = turn) == aux_predator.get_Y(epoch = epoch,turn = turn) and aux_prey.get_X(epoch = epoch,turn = turn) > aux_predator.get_X(epoch = epoch,turn = turn):
-                        RIGHT = 1
+                    # Same X position but the prey Y pos is lower    
+                    if aux_prey.get_X(epoch = epoch,turn = turn) == aux_predator.get_X(epoch = epoch,turn = turn) and aux_prey.get_Y(epoch = epoch,turn = turn) < aux_predator.get_Y(epoch = epoch,turn = turn):
+                        UP = 1
                     else:
                         
-                        # Same Y position but the prey X pos is lower
-                        if aux_prey.get_Y(epoch = epoch,turn = turn) == aux_predator.get_Y(epoch = epoch,turn = turn) and aux_prey.get_X(epoch = epoch,turn = turn) < aux_predator.get_X(epoch = epoch,turn = turn):
-                            LEFT = 1
+                        # Same Y position but the prey X pos is higher
+                        if aux_prey.get_Y(epoch = epoch,turn = turn) == aux_predator.get_Y(epoch = epoch,turn = turn) and aux_prey.get_X(epoch = epoch,turn = turn) > aux_predator.get_X(epoch = epoch,turn = turn):
+                            RIGHT = 1
                         else:
-                            # The 
                             
-                            X_diff = aux_prey.get_X(epoch = epoch,turn = turn) - aux_predator.get_X(epoch = epoch,turn = turn)
-                            Y_diff = aux_prey.get_Y(epoch = epoch,turn = turn) - aux_predator.get_Y(epoch = epoch,turn = turn)
-                            
-                            if X_diff > 0 and Y_diff > 0 and np.abs(X_diff)==np.abs(Y_diff):
-                                DOWN_RIGHT = 1
+                            # Same Y position but the prey X pos is lower
+                            if aux_prey.get_Y(epoch = epoch,turn = turn) == aux_predator.get_Y(epoch = epoch,turn = turn) and aux_prey.get_X(epoch = epoch,turn = turn) < aux_predator.get_X(epoch = epoch,turn = turn):
+                                LEFT = 1
                             else:
-                                if X_diff > 0 and Y_diff < 0 and np.abs(X_diff)==np.abs(Y_diff):
-                                    UP_RIGHT = 1
+                                # The 
+                                
+                                X_diff = aux_prey.get_X(epoch = epoch,turn = turn) - aux_predator.get_X(epoch = epoch,turn = turn)
+                                Y_diff = aux_prey.get_Y(epoch = epoch,turn = turn) - aux_predator.get_Y(epoch = epoch,turn = turn)
+                                
+                                if X_diff > 0 and Y_diff > 0 and np.abs(X_diff)==np.abs(Y_diff):
+                                    DOWN_RIGHT = 1
                                 else:
-                                    if X_diff < 0 and Y_diff < 0 and np.abs(X_diff)==np.abs(Y_diff):
-                                        UP_LEFT = 1
+                                    if X_diff > 0 and Y_diff < 0 and np.abs(X_diff)==np.abs(Y_diff):
+                                        UP_RIGHT = 1
                                     else:
-                                        if X_diff < 0 and Y_diff > 0 and np.abs(X_diff)==np.abs(Y_diff):
-                                            DOWN_LEFT = 1
-                                        
+                                        if X_diff < 0 and Y_diff < 0 and np.abs(X_diff)==np.abs(Y_diff):
+                                            UP_LEFT = 1
+                                        else:
+                                            if X_diff < 0 and Y_diff > 0 and np.abs(X_diff)==np.abs(Y_diff):
+                                                DOWN_LEFT = 1
+                                            
                         
                             
                         
@@ -531,36 +533,36 @@ class Board(object):
         aux_prey.MOVE_Y = 0
         aux_prey.MOVE_X = 0
         
-        
-        if move[0] ==1:
-            aux_prey.MOVE_Y = 1
-        else:
-            if move[1] ==1:
+        if aux_prey.is_alive():    
+            if move[0] ==1:
                 aux_prey.MOVE_Y = 1
-                aux_prey.MOVE_X = 1
             else:
-                if move[2] ==1:
+                if move[1] ==1:
+                    aux_prey.MOVE_Y = 1
                     aux_prey.MOVE_X = 1
                 else:
-                    if move[3] ==1:
-                        aux_prey.MOVE_Y = -1
+                    if move[2] ==1:
                         aux_prey.MOVE_X = 1
                     else:
-                        if move[4] ==1:
+                        if move[3] ==1:
                             aux_prey.MOVE_Y = -1
+                            aux_prey.MOVE_X = 1
                         else:
-                            if move[5] ==1:
+                            if move[4] ==1:
                                 aux_prey.MOVE_Y = -1
-                                aux_prey.MOVE_X = -1
                             else:
-                                if move[6] ==1:
+                                if move[5] ==1:
+                                    aux_prey.MOVE_Y = -1
                                     aux_prey.MOVE_X = -1
                                 else:
-                                    if move[7] ==1:
-                                        aux_prey.MOVE_Y = 1
+                                    if move[6] ==1:
                                         aux_prey.MOVE_X = -1
-                                    
+                                    else:
+                                        if move[7] ==1:
+                                            aux_prey.MOVE_Y = 1
+                                            aux_prey.MOVE_X = -1
                                         
+                                            
         
         
     def decidePredatorMove(self,id,epoch = epoch,turn = turn):
@@ -621,5 +623,51 @@ class Board(object):
             
         for i in range(0,self.num_preys):
             aux_prey = self.getPrey(id=i)
+            if aux_prey.is_alive():
+                aux_prey.move(epoch = epoch, turn = turn)
+    
+    def checkPredatorKillPrey(self,epoch = epoch, turn = turn):
+        for i in range(0,self.num_predators):
+            aux_predator = self.getPredator(id=i)
+            for j in range(0,self.num_preys):
+                aux_prey = self.getPrey(id = j)
+                if aux_prey.is_alive():
+                    x_difference = aux_prey.get_X(epoch = epoch,turn = turn) - aux_predator.get_X(epoch = epoch,turn = turn)
+                    y_difference = aux_prey.get_Y(epoch = epoch,turn = turn) - aux_predator.get_Y(epoch = epoch,turn = turn)
+
+                    euclidean_distance = np.sqrt(np.square(x_difference) + np.square(y_difference))
+                    
+                    if euclidean_distance <= 1.5:
+                        aux_prey.set_dead()
+                        aux_prey.set_fitness(epoch = epoch,fitness = turn/self.num_turns)
+                        
+                        aux_predator.set_fitness(epoch = epoch, fitness =  1 - turn/self.num_turns)
+                        
+                        self.num_preys = self.num_preys - 1
+    
+    
+    def resetGame(self,epoch = epoch):
+        for i in range(0,self.num_predators):
+            aux_predator = self.getPredator(id=i)
+            aux_predator.set_fitness(epoch = epoch ,fitness = 0)
             
-            aux_prey.move(epoch = epoch, turn = turn)
+            x = random.randint(0,self.sizeX-1)
+            y = random.randint(0,self.sizeY-1)
+            
+            aux_predator.set_X(x,epoch = epoch)
+            aux_predator.set_Y(y,epoch = epoch)
+            
+            
+            
+        for i in range(0,self.num_preys):
+            aux_prey = self.getPrey(id=i)
+            aux_prey.set_fitness(epoch = epoch ,fitness = 100)
+            aux_prey.set_alive()                    
+            
+            
+            x = random.randint(0,self.sizeX-1)
+            y = random.randint(0,self.sizeY-1)
+            
+            aux_prey.set_X(x,epoch = epoch)
+            aux_prey.set_Y(y,epoch = epoch)
+            
