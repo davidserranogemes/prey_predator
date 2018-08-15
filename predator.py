@@ -30,6 +30,10 @@ class Predator(object):
         self._x_pos = np.ones((num_epochs,num_turns+1))
         self._y_pos = np.ones((num_epochs,num_turns+1))
         
+        self.fitness = np.zeros((1,num_epochs))
+        self.fitness = self.fitness[0]
+        
+        
         self._data_register_list = list()
         self._data_register_list.insert(0,pd.DataFrame(np.random.randint(low=0, high=10, size=(0, 38)), columns = ['Prey UP','Prey UP-RIGHT','Prey RIGHT','Prey DOWN-RIGHT','Prey DOWN','Prey DOWN-LEFT','Prey LEFT','Prey UP-LEFT','From Limit UP','From Limit RIGHT','From Limit DOWN','From Limit LEFT','Last Move Predator UP','Last Move Predator DOUBLE-UP','Last Move Predator RIGHT','Last Move Predator DOUBLE-RIGHT','Last Move Predator DOWN','Last Move Predator DOUBLE-DOWN','Last Move Predator LEFT','Last Move Predator DOUBLE-LEFT','Last Move Predator STAND','Last Move Prey UP','Last Move Prey UP-RIGHT','Last Move Prey RIGHT','Last Move Prey DOWN-RIGHT','Last Move Prey DOWN','Last Move Prey DOWN-LEFT','Last Move Prey LEFT','Last Move Prey UP-LEFT','GO UP','GO DOUBLE-UP','GO RIGHT','GO DOUBLE-RIGHT','GO DOWN','GO DOUBLE-DOWN','GO LEFT','GO DOUBLE-LEFT','STAND']))
         
@@ -39,7 +43,10 @@ class Predator(object):
     
     def get_Y(self,epoch=0,turn=0):
         return int(self._y_pos[epoch,turn])
-    
+        
+    def get_fitness(self,epoch):
+        return self.fitness[epoch]
+  
     def add_register(self, register,epoch):
         
         if len(self._data_register_list) > epoch:
@@ -59,6 +66,9 @@ class Predator(object):
     
     def set_Y(self,Y,epoch=0,turn=0):
         self._y_pos[epoch,turn] = Y
+
+    def set_fitness(self,epoch,fitness):
+        self.fitness[epoch] = fitness
         
     def select_movement(self,data_entry):
         UP = 0
