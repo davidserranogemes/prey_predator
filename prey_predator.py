@@ -35,7 +35,7 @@ num_epoch = 2
 # Lists of bidimensional array from np.array
 
 # The boards have a list of at least num_turns BOARD x BOARD size.  All elements are 0 except the prey and the predator which takes -1 and +1 values
-BOARD = board.Board(num_preys = NUM_PREYS,num_predators = NUM_PREDATORS,board_size_x = BOARD_SIZE_X,board_size_y = BOARD_SIZE_Y)
+BOARD = board.Board(num_preys = NUM_PREYS,num_predators = NUM_PREDATORS,board_size_x = BOARD_SIZE_X,board_size_y = BOARD_SIZE_Y,num_turns=num_turns,num_epochs=num_epoch)
 
 # Vector of winners in every epoch. TRUE the predator wins, FALSE the prey win
 # We suppose that the prey wins
@@ -50,7 +50,7 @@ VICTORIES = [False] * num_epoch
 
 
 for epoch in range(0, num_epoch):
-    print(f"EPOCH: {epoch}")
+    print(f"Start EPOCH: {epoch}")
     # We start the epoch
     # We create a list of boards and a list of actions for the prey and the predator.
 
@@ -70,7 +70,8 @@ for epoch in range(0, num_epoch):
     #We start the turns. 
     for turn in range(0,num_turns):
         print(f"TURN: {turn}")
-        print(BOARD.getBoardMatrix())
+        print(BOARD.getBoardMatrix(turn = turn,epoch = epoch))
+        print(BOARD.num_preys)
         
         # We ask the prey and the predator to move based on the actual board
         BOARD.selectMoves(epoch=epoch, turn = turn-1)
@@ -79,8 +80,12 @@ for epoch in range(0, num_epoch):
         BOARD.commitMoves(epoch = epoch, turn = turn)
         
         # We check if the prey has died
-        
+        BOARD.checkPredatorKillPrey(epoch = epoch, turn = turn)        
         #If it hasn´t died  we continue.
+        print(BOARD.num_preys)
+        if BOARD.num_preys == 0:
+            print(f"All preys has died within {turn} turns")
+            break
         
         #We show the move (NOT YET)
     
@@ -94,7 +99,8 @@ for epoch in range(0, num_epoch):
     # We add to the list of the boards the list of board´s states
     
     #It ask to continue the train. If supervised
-    
+    if epoch+1<num_epoch:
+        BOARD.resetGame(epoch = epoch+1)
 
 
 #We show the plot for the fitness of both the predator and the prey
