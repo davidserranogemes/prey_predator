@@ -578,7 +578,7 @@ class Board(object):
         
         aux_predator.add_register(register,epoch)
         aux_predator.MOVE_Y = 0
-        aux_predator.MOVE_Z = 0
+        aux_predator.MOVE_X = 0
         
         if move[0] ==1:
             aux_predator.MOVE_Y = 1
@@ -619,16 +619,26 @@ class Board(object):
         for i in range(0,self.num_predators):
             aux_predator = self.getPredator(id=i)
             
-            aux_predator.move(epoch = epoch, turn = turn)
+            aux_predator.move(epoch = epoch, turn = turn, size_x = self.sizeX ,size_y = self.sizeY)
             
         for i in range(0,self.num_preys):
             aux_prey = self.getPrey(id=i)
             if aux_prey.is_alive():
-                aux_prey.move(epoch = epoch, turn = turn)
+                aux_prey.move(epoch = epoch, turn = turn,  size_x = self.sizeX ,size_y = self.sizeY)
     
     def checkPredatorKillPrey(self,epoch = epoch, turn = turn):
+        for i in range(0,self.num_preys):
+            aux_prey = self.getPrey(id = i)
+            
+            if aux_prey.is_alive():
+                if aux_prey.get_X(epoch = epoch,turn = turn) < 0 or aux_prey.get_X(epoch = epoch,turn = turn) > self.sizeX or aux_prey.get_Y(epoch = epoch,turn = turn) < 0 or aux_prey.get_Y(epoch = epoch,turn = turn) > self.sizeY:
+                    aux_prey.set_dead()
+                    aux_prey.set_fitness(epoch = epoch,fitness = 0)
+        
         for i in range(0,self.num_predators):
             aux_predator = self.getPredator(id=i)
+            aux_predator.set_fitness(epoch = epoch, fitness = aux_predator.get_fitness(epoch = epoch) - 1)
+            
             for j in range(0,self.num_preys):
                 aux_prey = self.getPrey(id = j)
                 if aux_prey.is_alive():
@@ -671,3 +681,12 @@ class Board(object):
             aux_prey.set_X(x,epoch = epoch)
             aux_prey.set_Y(y,epoch = epoch)
             
+    def trainBoard(self,first_train = False):
+        for i in range(0, self.num_predators):
+            aux_predator = self.getPredator(id = i)
+            aux_predator.train(first_training = first_train,victory = self.victory)
+        
+        for i in range(0, self.num_preys):
+            aux_prey = self.getPrey(id = i)
+            aux_prey.train(first_training = first_train,victory = self.victory)
+        
