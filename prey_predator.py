@@ -66,7 +66,10 @@ for epoch in range(0, num_epoch):
     
     # Once we have the model trained, We start the sesion. Both prey and predator move at once and we check if the prey is in a range 1-2 of the predator.
     # If this happen, the predator catches the prey and the epoch end. The predator get the maximun fitness and the prey the worst.
-    
+    if epoch == 0:
+        BOARD.trainBoard(first_train= True)
+    else:
+        BOARD.trainBoard()
     #We start the turns. 
     for turn in range(0,num_turns):
         print(f"TURN: {turn}")
