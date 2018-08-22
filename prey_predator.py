@@ -24,8 +24,8 @@ BOARD_SIZE_X = 7
 BOARD_SIZE_Y = 7
 
 
-DEBUG = True
-
+DEBUG = False
+TEST = True
 # Each epoch has X turns. If the predator catches the prey the epoch end
 num_turns = 20
 
@@ -94,6 +94,9 @@ for epoch in range(0, num_epoch):
         
         #We show the move (NOT YET)
         if DEBUG:
+            input("Press Enter to continue...")
+            
+        if epoch == num_epoch-1 and TEST and not DEBUG:
             input("Press Enter to continue...")
     # We check the  state of the board and create the fitness
     
