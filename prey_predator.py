@@ -17,15 +17,17 @@ import predator
 
 
 #CONSTANT
-BOARD_SIZE = 5
+
 NUM_PREYS = 1
 NUM_PREDATORS = 1
-BOARD_SIZE_X = 5
-BOARD_SIZE_Y = 5
+BOARD_SIZE_X = 7
+BOARD_SIZE_Y = 7
 
+
+DEBUG = True
 
 # Each epoch has X turns. If the predator catches the prey the epoch end
-num_turns = 10
+num_turns = 20
 
 
 # Every epoch ends with a new training of the model
@@ -74,7 +76,7 @@ for epoch in range(0, num_epoch):
     for turn in range(0,num_turns):
         print(f"TURN: {turn}")
         print(BOARD.getBoardMatrix(turn = turn,epoch = epoch))
-        print(BOARD.num_preys)
+        
         
         # We ask the prey and the predator to move based on the actual board
         BOARD.selectMoves(epoch=epoch, turn = turn-1)
@@ -85,13 +87,14 @@ for epoch in range(0, num_epoch):
         # We check if the prey has died
         BOARD.checkPredatorKillPrey(epoch = epoch, turn = turn)        
         #If it hasn´t died  we continue.
-        print(BOARD.num_preys)
+        
         if BOARD.num_preys == 0:
             print(f"All preys has died within {turn} turns")
             break
         
         #We show the move (NOT YET)
-    
+        if DEBUG:
+            input("Press Enter to continue...")
     # We check the  state of the board and create the fitness
     
     # We save the fitness and save who wins
