@@ -179,7 +179,7 @@ class Predator(object):
             aux_pd = pd.DataFrame(np.random.randint(low=0, high=1, size=(0, 38)), columns = ['Prey UP','Prey UP-RIGHT','Prey RIGHT','Prey DOWN-RIGHT','Prey DOWN','Prey DOWN-LEFT','Prey LEFT','Prey UP-LEFT','From Limit UP','From Limit RIGHT','From Limit DOWN','From Limit LEFT','Last Move Predator UP','Last Move Predator DOUBLE-UP','Last Move Predator RIGHT','Last Move Predator DOUBLE-RIGHT','Last Move Predator DOWN','Last Move Predator DOUBLE-DOWN','Last Move Predator LEFT','Last Move Predator DOUBLE-LEFT','Last Move Predator STAND','Last Move Prey UP','Last Move Prey UP-RIGHT','Last Move Prey RIGHT','Last Move Prey DOWN-RIGHT','Last Move Prey DOWN','Last Move Prey DOWN-LEFT','Last Move Prey LEFT','Last Move Prey UP-LEFT','GO UP','GO DOUBLE-UP','GO RIGHT','GO DOUBLE-RIGHT','GO DOWN','GO DOUBLE-DOWN','GO LEFT','GO DOUBLE-LEFT','STAND'])
             
             for i in range(0,len(self._data_register_list)):
-                aux_pd.append(self.access_register(i))
+               aux_pd = aux_pd.append(self.access_register(i))
             
             
             x = aux_pd[['Prey UP','Prey UP-RIGHT','Prey RIGHT','Prey DOWN-RIGHT','Prey DOWN','Prey DOWN-LEFT','Prey LEFT','Prey UP-LEFT','From Limit UP','From Limit RIGHT','From Limit DOWN','From Limit LEFT','Last Move Predator UP','Last Move Predator DOUBLE-UP','Last Move Predator RIGHT','Last Move Predator DOUBLE-RIGHT','Last Move Predator DOWN','Last Move Predator DOUBLE-DOWN','Last Move Predator LEFT','Last Move Predator DOUBLE-LEFT','Last Move Predator STAND','Last Move Prey UP','Last Move Prey UP-RIGHT','Last Move Prey RIGHT','Last Move Prey DOWN-RIGHT','Last Move Prey DOWN','Last Move Prey DOWN-LEFT','Last Move Prey LEFT','Last Move Prey UP-LEFT']]
