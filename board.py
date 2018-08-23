@@ -20,6 +20,7 @@ class Board(object):
     sizeX = 10
     sizeY = 10
     
+    total_num_preys = 1
     num_preys = 1
     num_predators = 1
     
@@ -36,6 +37,7 @@ class Board(object):
         
         self.num_predators = num_predators
         self.num_preys = num_preys
+        self.total_num_preys = num_preys
         
         self.victory = np.zeros((1,num_epochs),dtype=bool)[0]
         
@@ -118,9 +120,14 @@ class Board(object):
         for i in range(0,self.prey_vector.size):
             if self.prey_vector[0,i].is_alive():
                 matrix[self.prey_vector[0,i].get_Y(epoch = epoch,turn = turn),self.prey_vector[0,i].get_X(epoch = epoch,turn = turn)] = -1
-         
+            #matrix[self.prey_vector[0,i].get_Y(epoch = epoch,turn = turn),self.prey_vector[0,i].get_X(epoch = epoch,turn = turn)] = -1
+            
         for i in range(0,self.predator_vector.size):
-            matrix[self.predator_vector[0,i].get_Y(epoch = epoch,turn = turn),self.predator_vector[0,i].get_X(epoch = epoch,turn = turn)] = 1
+            if matrix[self.predator_vector[0,i].get_Y(epoch = epoch,turn = turn),self.predator_vector[0,i].get_X(epoch = epoch,turn = turn)] == -1:
+                matrix[self.predator_vector[0,i].get_Y(epoch = epoch,turn = turn),self.predator_vector[0,i].get_X(epoch = epoch,turn = turn)] = 2
+            else:
+                
+                matrix[self.predator_vector[0,i].get_Y(epoch = epoch,turn = turn),self.predator_vector[0,i].get_X(epoch = epoch,turn = turn)] = 1
         
         return matrix
     
@@ -657,6 +664,7 @@ class Board(object):
     
     
     def resetGame(self,epoch = epoch):
+        print("Reseting board")
         for i in range(0,self.num_predators):
             aux_predator = self.getPredator(id=i)
             aux_predator.set_fitness(epoch = epoch ,fitness = 0)
@@ -668,7 +676,8 @@ class Board(object):
             aux_predator.set_Y(y,epoch = epoch)
             
             
-            
+        self.num_preys = self.total_num_preys
+        
         for i in range(0,self.num_preys):
             aux_prey = self.getPrey(id=i)
             aux_prey.set_fitness(epoch = epoch ,fitness = 100)
