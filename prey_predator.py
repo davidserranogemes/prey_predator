@@ -20,18 +20,18 @@ import predator
 
 NUM_PREYS = 1
 NUM_PREDATORS = 1
-BOARD_SIZE_X = 7
-BOARD_SIZE_Y = 7
+BOARD_SIZE_X = 10
+BOARD_SIZE_Y = 10
 
 
 DEBUG = False
 TEST = True
 # Each epoch has X turns. If the predator catches the prey the epoch end
-num_turns = 20
+num_turns = 50
 
 
 # Every epoch ends with a new training of the model
-num_epoch = 2
+num_epoch = 100
 
 
 # Lists of bidimensional array from np.array
@@ -74,8 +74,13 @@ for epoch in range(0, num_epoch):
         BOARD.trainBoard()
     #We start the turns. 
     for turn in range(0,num_turns):
+        
         print(f"TURN: {turn}")
-        print(BOARD.getBoardMatrix(turn = turn,epoch = epoch))
+        if DEBUG:
+            print(BOARD.getBoardMatrix(turn = turn,epoch = epoch))
+        
+        if epoch == num_epoch-1 and TEST and not DEBUG:
+            print(BOARD.getBoardMatrix(turn = turn,epoch = epoch))
         
         
         # We ask the prey and the predator to move based on the actual board
