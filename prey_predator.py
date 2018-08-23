@@ -24,7 +24,9 @@ BOARD_SIZE_X = 10
 BOARD_SIZE_Y = 10
 
 
+#DEBUG = True
 DEBUG = False
+
 TEST = True
 # Each epoch has X turns. If the predator catches the prey the epoch end
 num_turns = 50
@@ -74,12 +76,13 @@ for epoch in range(0, num_epoch):
         BOARD.trainBoard()
     #We start the turns. 
     for turn in range(0,num_turns):
-        
-        print(f"TURN: {turn}")
+               
         if DEBUG:
+            print(f"TURN: {turn}")
             print(BOARD.getBoardMatrix(turn = turn,epoch = epoch))
         
         if epoch == num_epoch-1 and TEST and not DEBUG:
+            print(f"TURN: {turn}")
             print(BOARD.getBoardMatrix(turn = turn,epoch = epoch))
         
         
@@ -115,6 +118,8 @@ for epoch in range(0, num_epoch):
     #It ask to continue the train. If supervised
     if epoch+1<num_epoch:
         BOARD.resetGame(epoch = epoch+1)
+    
+    print("")
 
 
 #We show the plot for the fitness of both the predator and the prey
