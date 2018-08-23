@@ -46,7 +46,7 @@ class Prey(object):
         self._smell_range = smell_range
         
         self._data_register_list = list()
-        self._data_register_list.insert(0,pd.DataFrame(np.random.randint(low=0, high=10, size=(0, 16)), columns = ['Predator UP','Predator RIGHT','Predator DOWN','Predator LEFT','Limit UP','LimitRIGHT','Limit DOWN','Limit LEFT','Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT']))
+        self._data_register_list.insert(0,pd.DataFrame(np.random.randint(low=0, high=10, size=(0, 16)), columns = ['Predator UP','Predator RIGHT','Predator DOWN','Predator LEFT','Limit UP','Limit RIGHT','Limit DOWN','Limit LEFT','Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT']))
         
         self.alive = True
         
@@ -143,7 +143,7 @@ class Prey(object):
     
     def train(self, first_training = False,victory = []):
         if first_training:
-            aux_pd = pd.DataFrame(np.random.randint(low=0, high=1, size=(8, 16)), columns = ['Predator UP','Predator RIGHT','Predator DOWN','Predator LEFT','Limit UP','LimitRIGHT','Limit DOWN','Limit LEFT','Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT'])
+            aux_pd = pd.DataFrame(np.random.randint(low=0, high=1, size=(8, 16)), columns = ['Predator UP','Predator RIGHT','Predator DOWN','Predator LEFT','Limit UP','Limit RIGHT','Limit DOWN','Limit LEFT','Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT'])
             
             aux_pd.loc[0]['GO UP'] = 1
             aux_pd.loc[1]['GO UP-RIGHT'] = 1
@@ -155,7 +155,7 @@ class Prey(object):
             aux_pd.loc[7]['GO UP-LEFT'] = 1
             
             
-            x = aux_pd[['Predator UP','Predator RIGHT','Predator DOWN','Predator LEFT','Limit UP','LimitRIGHT','Limit DOWN','Limit LEFT']]
+            x = aux_pd[['Predator UP','Predator RIGHT','Predator DOWN','Predator LEFT','Limit UP','Limit RIGHT','Limit DOWN','Limit LEFT']]
             y = aux_pd[['Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT']]
             
             x_train, x_test, y_train, y_test = train_test_split(x,y, test_size= 0)
@@ -163,23 +163,45 @@ class Prey(object):
             self.AI.fit(x_train,y_train)
             
         else:
+            '''
             print("TODO, debe entrenar basandose en las victorias")
-            aux_pd = pd.DataFrame(np.random.randint(low=0, high=1, size=(8, 16)), columns = ['Predator UP','Predator RIGHT','Predator DOWN','Predator LEFT','Limit UP','LimitRIGHT','Limit DOWN','Limit LEFT','Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT'])
-            
+            aux_pd = pd.DataFrame(np.random.randint(low=0, high=1, size=(9, 38)), columns = ['Prey UP','Prey UP-RIGHT','Prey RIGHT','Prey DOWN-RIGHT','Prey DOWN','Prey DOWN-LEFT','Prey LEFT','Prey UP-LEFT','From Limit UP','From Limit RIGHT','From Limit DOWN','From Limit LEFT','Last Move Predator UP','Last Move Predator DOUBLE-UP','Last Move Predator RIGHT','Last Move Predator DOUBLE-RIGHT','Last Move Predator DOWN','Last Move Predator DOUBLE-DOWN','Last Move Predator LEFT','Last Move Predator DOUBLE-LEFT','Last Move Predator STAND','Last Move Prey UP','Last Move Prey UP-RIGHT','Last Move Prey RIGHT','Last Move Prey DOWN-RIGHT','Last Move Prey DOWN','Last Move Prey DOWN-LEFT','Last Move Prey LEFT','Last Move Prey UP-LEFT','GO UP','GO DOUBLE-UP','GO RIGHT','GO DOUBLE-RIGHT','GO DOWN','GO DOUBLE-DOWN','GO LEFT','GO DOUBLE-LEFT','STAND'])
             
             aux_pd.loc[0]['GO UP'] = 1
-            aux_pd.loc[1]['GO UP-RIGHT'] = 1
+            aux_pd.loc[1]['GO DOUBLE-UP'] = 1
             aux_pd.loc[2]['GO RIGHT'] = 1
-            aux_pd.loc[3]['GO DOWN-RIGHT'] = 1
+            aux_pd.loc[3]['GO DOUBLE-RIGHT'] = 1
             aux_pd.loc[4]['GO DOWN'] = 1
-            aux_pd.loc[5]['GO DOWN-LEFT'] = 1
+            aux_pd.loc[5]['GO DOUBLE-DOWN'] = 1
             aux_pd.loc[6]['GO LEFT'] = 1
-            aux_pd.loc[7]['GO UP-LEFT'] = 1
+            aux_pd.loc[7]['GO DOUBLE-LEFT'] = 1
+            aux_pd.loc[8]['GO STAND'] = 1
+            '''
+            aux_pd = pd.DataFrame(np.random.randint(low=0, high=1, size=(0, 16)), columns = ['Predator UP','Predator RIGHT','Predator DOWN','Predator LEFT','Limit UP','Limit RIGHT','Limit DOWN','Limit LEFT','Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT'])
             
+            for i in range(0,len(self._data_register_list)):
+                if not victory[i]:
+                    aux_pd = aux_pd.append(self.access_register(i))
             
-            x = aux_pd[['Predator UP','Predator RIGHT','Predator DOWN','Predator LEFT','Limit UP','LimitRIGHT','Limit DOWN','Limit LEFT']]
+            if len(aux_pd) == 0:
+                aux_pd = pd.DataFrame(np.random.randint(low=0, high=1, size=(8, 16)), columns = ['Predator UP','Predator RIGHT','Predator DOWN','Predator LEFT','Limit UP','Limit RIGHT','Limit DOWN','Limit LEFT','Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT'])
+            
+                   
+                aux_pd.loc[0]['GO UP'] = 1
+                aux_pd.loc[1]['GO UP-RIGHT'] = 1
+                aux_pd.loc[2]['GO RIGHT'] = 1
+                aux_pd.loc[3]['GO DOWN-RIGHT'] = 1
+                aux_pd.loc[4]['GO DOWN'] = 1
+                aux_pd.loc[5]['GO DOWN-LEFT'] = 1
+                aux_pd.loc[6]['GO LEFT'] = 1
+                aux_pd.loc[7]['GO UP-LEFT'] = 1     
+                
+            
+            x = aux_pd[['Predator UP','Predator RIGHT','Predator DOWN','Predator LEFT','Limit UP','Limit RIGHT','Limit DOWN','Limit LEFT']]
             y = aux_pd[['Go UP','GO UP-RIGHT','GO RIGHT','GO DOWN-RIGHT','GO DOWN','GO DOWN-LEFT','GO LEFT','GO UP-LEFT']]
             
             x_train, x_test, y_train, y_test = train_test_split(x,y, test_size= 0)
             
+            print(x_train)
+            print(y_train)
             self.AI.fit(x_train,y_train)
