@@ -99,6 +99,7 @@ class Prey(object):
         
         predicted = np.empty((1,8))
         predicted = predicted[0]
+        predicted[:] = 0
         
         predicted[selected] = 1
         
@@ -202,6 +203,5 @@ class Prey(object):
             
             x_train, x_test, y_train, y_test = train_test_split(x,y, test_size= 0)
             
-            print(x_train)
-            print(y_train)
+          
             self.AI.fit(x_train,y_train)
